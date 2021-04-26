@@ -1,46 +1,47 @@
 var bombs = 10;
 var start = 0;
 var seconds = 0;
-var interval;
 var numberRows = 9;
 var numberColumns = 9;
 var arrayGrid = new Array(numberRows);
 var arrayFlags = new Array(numberRows);
 
-// I have to change all digits 9 with numberColums and numberRows variables.
-
-// Creez tabela.
+// Create table.
 window.onload = function() {
 	var displayBombs;
 	var area = document.getElementById("table");
+
 	for (let i = 0; i < numberColumns; ++i) {
 		arrayGrid[i] = new Array(numberColumns);
 		arrayFlags[i] = new Array(numberColumns);
 	}
+
 	document.getElementById("table").style.gridTemplateRows = "repeat(" + numberRows + ", 30px)";
 	document.getElementById("table").style.gridTemplateColumns = "repeat(" + numberColumns + ", 30px)";
+
 	for (let row = 0; row < numberRows; ++row) {
 		for (let col = 0; col < numberColumns; ++col) {
 			area.innerHTML += '<div class="cell" id="' + row + col + '" onclick="play('+ row +', '+ col +')" onauxclick="rightButton('+ row +', '+ col +')">&nbsp</div>';
 			document.getElementById('' + row + col).style.backgroundColor = "grey";
 			arrayGrid[row][col] = 0;
-			//document.getElementById('' + row + col).innerHTML = row + " " + col;
 
 		}
 	}
+
 	if (bombs < 10) {
 		displayBombs = "00" + bombs;
 	} else if (bombs >= 10) {
 		displayBombs = "0" + bombs;
 	}
+
 	document.getElementById("numberBombs").innerHTML = displayBombs;
-	console.log(arrayGrid);
+	document.getElementById("button").innerHTML = "&#128578";
 }
 
-// Afisez secundele.
+// Display seconds.
 function stopWatch() {
 	var displaySeconds;
-	var interval;
+
 	if (seconds < 999) {
 		++seconds;
 	}
@@ -51,12 +52,14 @@ function stopWatch() {
 	} else {
 		displaySeconds = seconds;
 	}
+
 	document.getElementById("timer").innerHTML = displaySeconds;
 }
 
 // Select div elements with right click and display bombs number.
 function rightButton(row, col) {
 	var displayBombs;
+
 	document.addEventListener('contextmenu', function(event) {
 		event.preventDefault();
 	}, false);
@@ -79,20 +82,18 @@ function rightButton(row, col) {
 		}
 		document.getElementById("numberBombs").innerHTML = displayBombs;
 	}
-	
 }
 
-// The game begins.
+// Start the timer and place the bombs.
 function firstClick(firstClickRow, firstClickCol) {
-	// Porneste cronometrul.
 	interval = window.setInterval(stopWatch, 1000);
-	// Plasez bombele.
+
 	for (let k = 0; k < bombs; k++) {
     	var row = Math.floor(Math.random() * numberRows);
 		var col = Math.floor(Math.random() * numberColumns);
 		var ok = 0;
 
-		// Verific daca primul div selectat va avea langa el o bomba.
+		// I check if the first selected div element will have a bomb next to it.
 		if (firstClickCol + 1 < numberColumns) {
 			if (firstClickCol + 1 == col && firstClickRow == row) {
 				++ok;		
@@ -141,8 +142,8 @@ function firstClick(firstClickRow, firstClickCol) {
 			}
 		}
 
-		// Plasez o bomba pe un div daca langa primul div selectat nu exista o bomba.
-		// Plasez o bomba pe un div diferit de primul selectat si pe unul unde nu exista deja.
+		// I place a bomb on a div element if there is no bomb near the first selected div item.
+		// I place a bomb on a div other than the first one selected and on one where it doesn't already exist.
 		if (ok == 0) {
 			if (firstClickRow == row && firstClickCol == col) {
 				--k;
@@ -155,14 +156,12 @@ function firstClick(firstClickRow, firstClickCol) {
 			--k;
 		}
     }
-    console.log(arrayGrid);
 	
-	// Adaug cifrele ajutatoare.
+	// I add the helpful numbers.
 	for (let i = 0; i < numberRows; ++i) {
 		for (let j = 0; j < numberColumns; ++j) {
 			var count = 0;
 			if (arrayGrid[i][j] !== 'BOOM') {
-
 				if (j + 1 < numberColumns) {
 					if (arrayGrid[i][j + 1] === 'BOOM') {
 						++count;
@@ -210,7 +209,6 @@ function firstClick(firstClickRow, firstClickCol) {
 						++count;
 					}
 				}
-				//console.log(count);
 				arrayGrid[i][j] = count;
 				if (count === 0) {
 					document.getElementById('' + i + j).innerHTML = ' ';
@@ -220,10 +218,12 @@ function firstClick(firstClickRow, firstClickCol) {
 	}
 	discover(firstClickRow , firstClickCol);
 }
-// Parcurg toate cifrele de 0 din matrice care sunt legate intre ele.
+
+// Go through all the digits of 0 in the matrix that are related to each other.
 function discover(a, b) {
 	var count = -1;
 	var reverseCount = 0;
+
 	while (reverseCount < 1) {
 		dicoverHelpfulNumbers(a, b);
 		if ((a - 1 >= 0) && (arrayGrid[a - 1][b] == 0)) {
@@ -286,11 +286,12 @@ function discover(a, b) {
 	}
 }
 
-// Afisez fiecare cifra ajutatoare din jurul fiecaui element din matrice care este mai mic de 0;
+// I display each helper digit around each element in the matrix that is less than 0;
 function dicoverHelpfulNumbers(a, b) {
 	var row = a;
 	var col = b;
 	document.getElementById('' + row + col).style.backgroundColor = "white";
+
 	if (arrayGrid[row][col] > 0) {
 		document.getElementById('' + row + col).innerHTML = arrayGrid[row][col];
 	}
@@ -369,7 +370,6 @@ function dicoverHelpfulNumbers(a, b) {
 }
 
 function play(a, b) {
-	document.getElementById("gameState").innerHTML = a + "   " + b;
 	if (start == 0) {
 		firstClick(a, b);
 		start = 1;
@@ -387,6 +387,7 @@ function play(a, b) {
 			document.getElementById("table").style.pointerEvents = "none";
 			document.getElementById("gameState").style.color = "red";
 			document.getElementById("gameState").innerHTML = "GAME OVER";
+			document.getElementById("button").innerHTML = "&#128565";
 			window.clearInterval(interval);
 		} else if (arrayGrid[a][b] === 0 && arrayFlags[a][b] !== "flag") {
 			discover(a, b);
@@ -395,7 +396,7 @@ function play(a, b) {
 			document.getElementById('' + a + b).style.backgroundColor = "white";
 		}
 
-		// Verific daca jucatorul a castigat.
+		// I check if the player has won.
 		for (let i = 0; i < numberRows; ++i) {
 			for (let j = 0; j < numberColumns; ++j) {
 				var cellStyle = document.createElement('style');
@@ -410,11 +411,12 @@ function play(a, b) {
 		document.getElementById("gameState").style.color = "green";
 		document.getElementById("gameState").innerHTML = "CONGRATULATIONS! YOU WIN!";
 		document.getElementById("table").style.pointerEvents = "none";
+		document.getElementById("button").innerHTML = "&#128526";
 		window.clearInterval(interval);
 	}
 }
 
-// Incep alt joc.
+// Start another game.
 function restartPage() {
 	location.reload();
 }
