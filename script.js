@@ -1,10 +1,10 @@
+var arrayGrid = new Array(numberRows);
+var arrayFlags = new Array(numberRows);
 var bombs = 10;
 var start = 0;
 var seconds = 0;
 var numberRows = 9;
 var numberColumns = 9;
-var arrayGrid = new Array(numberRows);
-var arrayFlags = new Array(numberRows);
 var goThrough = -1;
 
 // Create table.
@@ -25,7 +25,6 @@ window.onload = function() {
 			area.innerHTML += '<div class="cell" id="' + row + col + '" onclick="play('+ row +', '+ col +')" onauxclick="rightButton('+ row +', '+ col +')">&nbsp</div>';
 			document.getElementById('' + row + col).style.backgroundColor = "grey";
 			arrayGrid[row][col] = 0;
-
 		}
 	}
 
@@ -35,6 +34,7 @@ window.onload = function() {
 		displayBombs = "0" + bombs;
 	}
 
+	document.getElementById("timer").innerHTML = "000";
 	document.getElementById("numberBombs").innerHTML = displayBombs;
 	document.getElementById("button").innerHTML = "&#128578";
 }
@@ -64,7 +64,6 @@ function rightButton(row, col) {
 	document.addEventListener('contextmenu', function(event) {
 		event.preventDefault();
 	}, false);
-
 	if (bombs > 0 && start == 1) {
 		var cell = document.getElementById('' + row + col).innerHTML;
 		if (cell === "&nbsp;") {
@@ -92,7 +91,6 @@ function firstClick(firstClickRow, firstClickCol) {
 	for (let k = 0; k < bombs; k++) {
     	var row = Math.floor(Math.random() * numberRows);
 		var col = Math.floor(Math.random() * numberColumns);
-		//var ok = 0;
 
 		if ((row >= firstClickRow - 1 && row <= firstClickRow + 1) && (col >= firstClickCol - 1 && col <= firstClickCol + 1)) {
 			--k
@@ -114,7 +112,7 @@ function firstClick(firstClickRow, firstClickCol) {
 			if (arrayGrid[rows][cols] != "BOOM") {
 				for (let i = rows - 1; i <= rows + 1; ++i) {
 					for (let j = cols - 1; j <= cols + 1; ++j) {
-						if ((i >= 0 && i <= 8) && (j >= 0 && j <= 8)) {
+						if ((i >= 0 && i <= numberRows - 1) && (j >= 0 && j <= numberColumns - 1)) {
 							if (arrayGrid[i][j] == "BOOM") {
 								++count;
 							}
@@ -131,6 +129,7 @@ function firstClick(firstClickRow, firstClickCol) {
 		}
 	}
 	discover(firstClickRow , firstClickCol);
+	console.log(arrayGrid);
 }
 
 // Go through all the digits of 0 in the matrix that are related to each other.
@@ -205,6 +204,7 @@ function play(a, b) {
 					}
 				}
 			}
+
 			document.getElementById("table").style.pointerEvents = "none";
 			document.getElementById("gameState").style.color = "red";
 			document.getElementById("gameState").innerHTML = "GAME OVER";
