@@ -5,6 +5,7 @@ var numberRows = 9;
 var numberColumns = 9;
 var arrayGrid = new Array(numberRows);
 var arrayFlags = new Array(numberRows);
+var goThrough = -1;
 
 // Create table.
 window.onload = function() {
@@ -64,7 +65,7 @@ function rightButton(row, col) {
 		event.preventDefault();
 	}, false);
 
-	if (bombs > 0) {
+	if (bombs > 0 && start == 1) {
 		var cell = document.getElementById('' + row + col).innerHTML;
 		if (cell === "&nbsp;") {
 			document.getElementById('' + row + col).innerHTML = "&#128681";
@@ -91,60 +92,11 @@ function firstClick(firstClickRow, firstClickCol) {
 	for (let k = 0; k < bombs; k++) {
     	var row = Math.floor(Math.random() * numberRows);
 		var col = Math.floor(Math.random() * numberColumns);
-		var ok = 0;
+		//var ok = 0;
 
-		// I check if the first selected div element will have a bomb next to it.
-		if (firstClickCol + 1 < numberColumns) {
-			if (firstClickCol + 1 == col && firstClickRow == row) {
-				++ok;		
-			}
-		}
-
-		if (firstClickRow + 1 < numberRows && firstClickCol + 1 < numberColumns) {
-			if (firstClickRow + 1 == row && firstClickCol + 1 == col) {
-				++ok;
-			}
-		}
-
-		if (firstClickRow + 1 < numberRows) {
-			if (firstClickRow + 1 == row && firstClickCol == col) {
-				++ok;
-			}
-		}
-
-		if (firstClickRow + 1 < numberRows && firstClickCol - 1 >= 0) {
-			if (firstClickRow + 1 == row && firstClickCol - 1 == col) {
-				++ok;
-			}
-		}
-
-		if (firstClickCol - 1 >= 0) {
-			if (firstClickCol - 1 == col && firstClickRow == row) {
-				++ok;
-			}
-		}
-
-		if (firstClickRow - 1 >= 0 && firstClickCol - 1 >= 0) {
-			if (firstClickRow - 1 == row && firstClickCol - 1 == col) {
-				++ok;
-			}
-		}
-
-		if (firstClickRow - 1 >= 0) {
-			if (firstClickRow - 1 == row && firstClickCol == col) {
-				++ok;
-			}
-		}
-
-		if (firstClickRow - 1 >= 0 && firstClickCol + 1 < numberColumns) {
-			if (firstClickRow - 1 == row && firstClickCol + 1 == col) {
-				++ok;
-			}
-		}
-
-		// I place a bomb on a div element if there is no bomb near the first selected div item.
-		// I place a bomb on a div other than the first one selected and on one where it doesn't already exist.
-		if (ok == 0) {
+		if ((row >= firstClickRow - 1 && row <= firstClickRow + 1) && (col >= firstClickCol - 1 && col <= firstClickCol + 1)) {
+			--k
+		} else {
 			if (firstClickRow == row && firstClickCol == col) {
 				--k;
 			} else if (arrayGrid[row][col] == 'BOOM') {
@@ -152,68 +104,30 @@ function firstClick(firstClickRow, firstClickCol) {
 			} else if (arrayGrid[row][col] != 'BOOM') {
 				arrayGrid[row][col] = 'BOOM'; 
 			}
-		} else {
-			--k;
 		}
     }
 	
 	// I add the helpful numbers.
-	for (let i = 0; i < numberRows; ++i) {
-		for (let j = 0; j < numberColumns; ++j) {
+	for (let rows = 0; rows < numberRows; ++rows) {
+		for (let cols = 0; cols < numberColumns; ++cols) {
 			var count = 0;
-			if (arrayGrid[i][j] !== 'BOOM') {
-				if (j + 1 < numberColumns) {
-					if (arrayGrid[i][j + 1] === 'BOOM') {
-						++count;
+			if (arrayGrid[rows][cols] != "BOOM") {
+				for (let i = rows - 1; i <= rows + 1; ++i) {
+					for (let j = cols - 1; j <= cols + 1; ++j) {
+						if ((i >= 0 && i <= 8) && (j >= 0 && j <= 8)) {
+							if (arrayGrid[i][j] == "BOOM") {
+								++count;
+							}
+						}
 					}
 				}
-
-				if (i + 1 < numberRows && j + 1 < numberColumns) {
-					if (arrayGrid[i + 1][j + 1] === 'BOOM') {
-						++count;
-					}
-				}
-
-				if (i + 1 < numberRows) {
-					if (arrayGrid[i + 1][j] === 'BOOM') {
-						++count;
-					}
-				}
-
-				if (i + 1 < numberRows && j - 1 >= 0) {
-					if (arrayGrid[i + 1][j - 1] === 'BOOM') {
-						++count;
-					}
-				}
-
-				if (j - 1 >= 0) {
-					if (arrayGrid[i][j - 1] === 'BOOM') {
-						++count;
-					}
-				}
-
-				if (i - 1 >= 0 && j - 1 >= 0) {
-					if (arrayGrid[i - 1][j - 1] === 'BOOM') {
-						++count;
-					}
-				}
-
-				if (i - 1 >= 0) {
-					if (arrayGrid[i - 1][j] === 'BOOM') {
-						++count;
-					}
-				}
-
-				if (i - 1 >= 0 && j + 1 < numberColumns) {
-					if (arrayGrid[i - 1][j + 1] === 'BOOM') {
-						++count;
-					}
-				}
-				arrayGrid[i][j] = count;
-				if (count === 0) {
-					document.getElementById('' + i + j).innerHTML = ' ';
+				if (count == 0) {
+					document.getElementById('' + rows + cols).innerHTML = ' ';
+				} else {
+					arrayGrid[rows][cols] = count;
 				}
 			}
+
 		}
 	}
 	discover(firstClickRow , firstClickCol);
@@ -221,64 +135,36 @@ function firstClick(firstClickRow, firstClickCol) {
 
 // Go through all the digits of 0 in the matrix that are related to each other.
 function discover(a, b) {
-	var count = -1;
-	var reverseCount = 0;
+	var reverseCount = -1;
+	var copyA;
+	var copyB;
+	var ok;
+	while (reverseCount < 0) {
+		ok = 0;
+		for (let i = a - 1; i <= a + 1; ++i) {
+			for (let j = b - 1; j <= b + 1; ++j) {
+				if ((i >= 0 && i < numberRows) && (j >= 0 && j < numberColumns) && (arrayGrid[i][j] == 0)) {
+					discoverHelpfulNumbers(i, j);
+					arrayGrid[i][j] = goThrough;
+					--goThrough;
+					reverseCount = goThrough;
+					copyA = i;
+					copyB = j;
+					ok = 1;
+				}
+			}
+		}
 
-	while (reverseCount < 1) {
-		dicoverHelpfulNumbers(a, b);
-		if ((a - 1 >= 0) && (arrayGrid[a - 1][b] == 0)) {
-			arrayGrid[a - 1][b] = count;
-			--count;
-			a = a - 1;
-			reverseCount = count;
-		} else if ((a - 1 >= 0 && b + 1 < numberColumns) && (arrayGrid[a - 1][b + 1] == 0)) {
-			arrayGrid[a - 1][b + 1] = count;
-			--count;
-			a = a - 1;
-			b = b + 1;
-			reverseCount = count;
-		} else if ((b + 1 < numberColumns) && (arrayGrid[a][b + 1] == 0)) {
-			arrayGrid[a][b + 1] = count;	
-			--count;
-			b = b + 1;
-			reverseCount = count;		
-		} else if ((a + 1 < numberRows && b + 1 < numberColumns) && (arrayGrid[a + 1][b + 1] == 0)) {
-			arrayGrid[a + 1][b + 1] = count;
-			--count;
-			a = a + 1;
-			b = b + 1;
-			reverseCount = count;
-		} else if ((a + 1 < numberRows) && (arrayGrid[a + 1][b] == 0)) {
-			arrayGrid[a + 1][b] = count;
-			--count;
-			a = a + 1;
-			reverseCount = count;
-		} else if ((a + 1 < numberRows && b - 1 >= 0) && (arrayGrid[a + 1][b - 1] == 0)) {
-			arrayGrid[a + 1][b - 1] = count;
-			--count;
-			a = a + 1;
-			b = b - 1;
-			reverseCount = count;
-		} else if ((b - 1 >= 0) && (arrayGrid[a][b - 1] == 0)) {
-			arrayGrid[a][b - 1] = count;
-			--count;
-			b = b - 1;
-			reverseCount = count;
-		} else if ((a - 1 >= 0 && b - 1 >= 0) && (arrayGrid[a - 1][b - 1] == 0)) {
-			arrayGrid[a - 1][b - 1] = count;
-			--count;
-			a = a - 1;
-			b = b - 1;
-			reverseCount = count;
+		if (ok == 1) {
+			a = copyA;
+			b = copyB;
 		} else {
-			reverseCount += 1;
-			if (reverseCount < 0) {
-				for (let i = 0; i < numberRows; ++i) {
-					for (let j = 0; j < numberColumns; ++j) {
-						if (arrayGrid[i][j] == reverseCount) {
-							a = i;
-							b = j;
-						}
+			reverseCount = reverseCount + 1;
+			for (let i = 0; i < numberRows; ++i) {
+				for (let j = 0; j < numberColumns; ++j) {
+					if (arrayGrid[i][j] == reverseCount) {
+						a = i;
+						b = j;
 					}
 				}
 			}
@@ -287,85 +173,16 @@ function discover(a, b) {
 }
 
 // I display each helper digit around each element in the matrix that is less than 0;
-function dicoverHelpfulNumbers(a, b) {
-	var row = a;
-	var col = b;
-	document.getElementById('' + row + col).style.backgroundColor = "white";
-
-	if (arrayGrid[row][col] > 0) {
-		document.getElementById('' + row + col).innerHTML = arrayGrid[row][col];
-	}
-
-	if (b + 1 < numberColumns) {
-		row = a;
-		col = b + 1;
-		document.getElementById('' + row + col).style.backgroundColor = "white";
-	}
-	if (arrayGrid[row][col] > 0) {
-		document.getElementById('' + row + col).innerHTML = arrayGrid[row][col];
-	}
-
-	if (a + 1 < numberRows && b + 1 < numberColumns) {
-		row = a + 1;
-		col = b + 1;
-		document.getElementById('' + row + col).style.backgroundColor = "white";
-	}
-	if (arrayGrid[row][col] > 0) {
-		document.getElementById('' + row + col).innerHTML = arrayGrid[row][col];
-	}
-
-	if (a + 1 < numberRows) {
-		row = a + 1;
-		col = b;
-		document.getElementById('' + row + col).style.backgroundColor = "white";
-	}
-	if (arrayGrid[row][col] > 0) {
-		document.getElementById('' + row + col).innerHTML = arrayGrid[row][col];
-	}
-
-	if (a + 1 < numberRows && b - 1 >= 0) {
-		row = a + 1;
-		col = b - 1;
-		document.getElementById('' + row + col).style.backgroundColor = "white";
-	}
-	if (arrayGrid[row][col] > 0) {
-		document.getElementById('' + row + col).innerHTML = arrayGrid[row][col];
-	}
-
-	if (b - 1 >= 0) {
-		row = a;
-		col = b - 1;
-		document.getElementById('' + row + col).style.backgroundColor = "white";
-	}
-	if (arrayGrid[row][col] > 0) {
-		document.getElementById('' + row + col).innerHTML = arrayGrid[row][col];
-	}
-
-	if (a - 1 >= 0 && b - 1 >= 0) {
-		row = a - 1;
-		col = b - 1;
-		document.getElementById('' + row + col).style.backgroundColor = "white";
-	}
-	if (arrayGrid[row][col] > 0) {
-		document.getElementById('' + row + col).innerHTML = arrayGrid[row][col];
-	}
-
-	if (a - 1 >= 0) {
-		row = a - 1;
-		col = b;
-		document.getElementById('' + row + col).style.backgroundColor = "white";
-	}
-	if (arrayGrid[row][col] > 0) {
-		document.getElementById('' + row + col).innerHTML = arrayGrid[row][col];
-	}
-
-	if (a - 1 >= 0 && b + 1 < numberColumns) {
-		row = a - 1;
-		col = b + 1;
-		document.getElementById('' + row + col).style.backgroundColor = "white";
-	}
-	if (arrayGrid[row][col] > 0) {
-		document.getElementById('' + row + col).innerHTML = arrayGrid[row][col];
+function discoverHelpfulNumbers(a, b) {
+	for (let i = a - 1; i <= a + 1; ++i) {
+		for (let j = b - 1; j <= b + 1; ++j) {
+			if ((i >= 0 && i < numberRows) && (j >= 0 && j < numberColumns)) {
+				document.getElementById('' + i + j).style.backgroundColor = "white";
+				if (arrayGrid[i][j] > 0) {
+					document.getElementById('' + i + j).innerHTML = arrayGrid[i][j];
+				}
+			}
+		}
 	}
 }
 
@@ -382,6 +199,10 @@ function play(a, b) {
 						document.getElementById('' + i + j).innerHTML = "&#128163"; 
 						document.getElementById('' + i + j).style.backgroundColor = "red";
 					}
+					if (arrayGrid[i][j] !== 'BOOM' && arrayFlags[i][j] === "flag") {
+						document.getElementById('' + i + j).innerHTML = "&#10060"; 
+						console.log(i + " " + j);
+					}
 				}
 			}
 			document.getElementById("table").style.pointerEvents = "none";
@@ -389,7 +210,7 @@ function play(a, b) {
 			document.getElementById("gameState").innerHTML = "GAME OVER";
 			document.getElementById("button").innerHTML = "&#128565";
 			window.clearInterval(interval);
-		} else if (arrayGrid[a][b] === 0 && arrayFlags[a][b] !== "flag") {
+		} else if (arrayGrid[a][b] == 0 && arrayFlags[a][b] != "flag") {
 			discover(a, b);
 		} else if (arrayGrid[a][b] > 0 && arrayFlags[a][b] !== "flag") {
 			document.getElementById('' + a + b).innerHTML = arrayGrid[a][b];
