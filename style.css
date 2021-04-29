@@ -1,6 +1,7 @@
 .grid {
 	display: grid;
-	margin: auto;
+	position: absolute;
+	border: 5px solid;
 	justify-content: center;
 }
 
@@ -15,6 +16,12 @@
 	font-size: 15px;
 	font-weight: bold;
 	box-shadow: 1px 1px inset;
+}
+
+.level {
+	background-color: #d4d4d4;
+	border: 1px solid;
+	margin: 10px;
 }
 
 button {

@@ -1,18 +1,64 @@
-var arrayGrid = new Array(numberRows);
-var arrayFlags = new Array(numberRows);
-var bombs = 10;
-var start = 0;
-var seconds = 0;
-var numberRows = 9;
-var numberColumns = 9;
-var goThrough = -1;
+var arrayGrid = [];
+var arrayFlags = [];
+var bombs;
+var start;
+var seconds;
+var numberRows;
+var numberColumns;
+var goThrough;
+var dash = "-";
+var interval;
+var currentLevel;
+
+function level(levels) {
+	removeCells();
+	if (levels == "easy") {
+		numberRows = 9;
+		numberColumns = 9;
+		bombs = 10;	
+	} else if (levels == "medium") {
+		numberRows = 16;
+		numberColumns = 16;
+		bombs = 40;
+	} else if (levels == "hard") {
+		numberRows = 16;
+		numberColumns = 30;
+		bombs = 99;
+	}
+
+	lev = levels;
+	start = 0;
+	seconds = 0;
+	goThrough = -1;
+	arrayGrid = new Array(numberRows);
+	arrayFlags = new Array(numberRows);
+	document.getElementById("gameState").innerHTML = " ";
+	document.getElementById("table").style.pointerEvents = "auto";
+	window.clearInterval(interval);
+	createTable();
+}
+
+function removeCells() {
+	for (let row = 0; row < numberRows; ++row) {
+		for (let col = 0; col < numberColumns; ++col) {
+			var remove = document.getElementById('' + row + dash + col);
+			remove.remove();
+		}
+	}
+	arrayGrid.length = 0;
+	arrayFlags.length = 0;
+}
+
+window.onload = function() {
+	level("medium");
+}
 
 // Create table.
-window.onload = function() {
+function createTable() {
 	var displayBombs;
 	var area = document.getElementById("table");
 
-	for (let i = 0; i < numberColumns; ++i) {
+	for (let i = 0; i < numberRows; ++i) {
 		arrayGrid[i] = new Array(numberColumns);
 		arrayFlags[i] = new Array(numberColumns);
 	}
@@ -22,8 +68,8 @@ window.onload = function() {
 
 	for (let row = 0; row < numberRows; ++row) {
 		for (let col = 0; col < numberColumns; ++col) {
-			area.innerHTML += '<div class="cell" id="' + row + col + '" onclick="play('+ row +', '+ col +')" onauxclick="rightButton('+ row +', '+ col +')">&nbsp</div>';
-			document.getElementById('' + row + col).style.backgroundColor = "grey";
+			area.innerHTML += '<div class="cell" id="' + row + dash + col + '" onclick="play('+ row +', '+ col +')" onauxclick="rightButton('+ row +', '+ col +')">&nbsp</div>';
+			document.getElementById('' + row + dash + col).style.backgroundColor = "grey";
 			arrayGrid[row][col] = 0;
 		}
 	}
@@ -65,13 +111,13 @@ function rightButton(row, col) {
 		event.preventDefault();
 	}, false);
 	if (bombs > 0 && start == 1) {
-		var cell = document.getElementById('' + row + col).innerHTML;
+		var cell = document.getElementById('' + row + dash + col).innerHTML;
 		if (cell === "&nbsp;") {
-			document.getElementById('' + row + col).innerHTML = "&#128681";
+			document.getElementById('' + row + dash + col).innerHTML = "&#128681";
 			arrayFlags[row][col] = "flag";
 			--bombs;
 		} else if (cell != 1 && cell != 2 && cell != 3 && cell != 4 && cell != 5 && cell != 6 && cell != 7 && cell != 8) {
-			document.getElementById('' + row + col).innerHTML = "&nbsp;";
+			document.getElementById('' + row + dash + col).innerHTML = "&nbsp;";
 			arrayFlags[row][col] = "";
 			++bombs;
 		}
@@ -120,7 +166,7 @@ function firstClick(firstClickRow, firstClickCol) {
 					}
 				}
 				if (count == 0) {
-					document.getElementById('' + rows + cols).innerHTML = ' ';
+					document.getElementById('' + rows + dash + cols).innerHTML = ' ';
 				} else {
 					arrayGrid[rows][cols] = count;
 				}
@@ -176,9 +222,9 @@ function discoverHelpfulNumbers(a, b) {
 	for (let i = a - 1; i <= a + 1; ++i) {
 		for (let j = b - 1; j <= b + 1; ++j) {
 			if ((i >= 0 && i < numberRows) && (j >= 0 && j < numberColumns)) {
-				document.getElementById('' + i + j).style.backgroundColor = "white";
+				document.getElementById('' + i + dash + j).style.backgroundColor = "white";
 				if (arrayGrid[i][j] > 0) {
-					document.getElementById('' + i + j).innerHTML = arrayGrid[i][j];
+					document.getElementById('' + i + dash + j).innerHTML = arrayGrid[i][j];
 				}
 			}
 		}
@@ -193,13 +239,13 @@ function play(a, b) {
 		if (arrayGrid[a][b] === 'BOOM' && arrayFlags[a][b] !== "flag") {
 			for (let i = 0; i < numberRows; ++i) {
 				for (let j = 0; j < numberColumns; ++j) {
-					var cell = document.getElementById('' + i + j).innerHTML;
+					var cell = document.getElementById('' + i + dash + j).innerHTML;
 					if (arrayGrid[i][j] === 'BOOM' && cell === "&nbsp;") {
-						document.getElementById('' + i + j).innerHTML = "&#128163"; 
-						document.getElementById('' + i + j).style.backgroundColor = "red";
+						document.getElementById('' + i + dash + j).innerHTML = "&#128163"; 
+						document.getElementById('' + i + dash + j).style.backgroundColor = "red";
 					}
 					if (arrayGrid[i][j] !== 'BOOM' && arrayFlags[i][j] === "flag") {
-						document.getElementById('' + i + j).innerHTML = "&#10060"; 
+						document.getElementById('' + i + dash + j).innerHTML = "&#10060"; 
 						console.log(i + " " + j);
 					}
 				}
@@ -213,15 +259,15 @@ function play(a, b) {
 		} else if (arrayGrid[a][b] == 0 && arrayFlags[a][b] != "flag") {
 			discover(a, b);
 		} else if (arrayGrid[a][b] > 0 && arrayFlags[a][b] !== "flag") {
-			document.getElementById('' + a + b).innerHTML = arrayGrid[a][b];
-			document.getElementById('' + a + b).style.backgroundColor = "white";
+			document.getElementById('' + a + dash + b).innerHTML = arrayGrid[a][b];
+			document.getElementById('' + a + dash + b).style.backgroundColor = "white";
 		}
 
 		// I check if the player has won.
 		for (let i = 0; i < numberRows; ++i) {
 			for (let j = 0; j < numberColumns; ++j) {
 				var cellStyle = document.createElement('style');
-				cellStyle = document.getElementById('' + i + j).style.backgroundColor;
+				cellStyle = document.getElementById('' + i + dash + j).style.backgroundColor;
 				if (arrayGrid[i][j] != 'BOOM') {
 					if (cellStyle != "white") {
 						return;
@@ -239,5 +285,5 @@ function play(a, b) {
 
 // Start another game.
 function restartPage() {
-	location.reload();
+	level(currentLevel);
 }
