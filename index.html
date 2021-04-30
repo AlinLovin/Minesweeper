@@ -2,6 +2,7 @@
 <html>
 <head>
 	<script src="script.js"></script>
+	<link href="https://allfont.net/allfont.css?fonts=digital-7-mono">
 	<link rel="stylesheet" href="style.css">
 	<title>Minesweeper</title>
 </head>
@@ -11,14 +12,14 @@
 		<button class="levelButton" id="medium" onclick="level('medium')">Medium</button>
 		<button class="levelButton" id="hard" onclick="level('hard')">Hard</button>
 	</div>
+
+	<p id="gameState"></p>
+
 	<div class="container1">
-		<div class="container2">
-			<div id="numberBombs"></div>
-			<button id="button" onclick="restartPage()"></button>
-			<div id="timer"></div>
-		</div>
+		<div id="numberBombs"></div>
+		<button id="button" onclick="newGame()"></button>
+		<div id="timer"></div>
 		<div class="grid" id="table"></div>
 	</div>
-	<p id="gameState"></p>
 </body>
 </html>

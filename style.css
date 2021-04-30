@@ -1,49 +1,59 @@
 .grid {
 	display: grid;
-	position: absolute;
-	border: 5px solid;
+	position: relative;
+	border-top: 10px solid #A0A0A0;
 	justify-content: center;
+	box-shadow: grey 0px -3px 2px;
 }
 
 .cell {
 	grid-column-end: span 1;
 	grid-row-end: span 1;
-	border: 1px solid #A0A0A0;	
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	user-select: none;
 	font-size: 15px;
 	font-weight: bold;
-	box-shadow: 1px 1px inset;
+	cursor: pointer;
+	box-shadow: white 3px 3px 2px 0px inset, grey -3px -3px 2px 0px inset;
 }
 
 .level {
 	background-color: #d4d4d4;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 285px;
 	border: 1px solid;
 	margin: 10px;
+	box-shadow: grey 3px 3px 2px 0px inset, white -3px -3px 2px 0px inset;
 }
 
 button {
-	background-color: gray;
+	background-color: #A0A0A0;
 	border: 1px solid #A0A0A0;
 	padding: 5px 8px;
 	text-align: center;
-	font-size: 25px;
-	margin: 4px 2px;
+	font-size: 15px;
+	margin: 4px 20px;
 	cursor: pointer;
-	box-shadow: 1px 1px inset;
 	user-select: none;
+	box-shadow: white 3px 3px 2px 0px inset, grey -3px -3px 2px 0px inset;
+}
+
+#button {
+	font-size: 25px;
 }
 
 .container1 {
-	margin: auto;
+	position: absolute;
 	justify-content: center;
 	text-align: center;
-	border: 10px solid #A0A0A0;
-	height: 336px;
-	width: 269px;
-	box-shadow: 1px 1px inset;
+	border: 8px solid #A0A0A0;
+	background-color: #A0A0A0;
+	margin: 10px;
+	box-shadow: white 3px 3px 2px 0px inset, grey -3px -3px 2px 0px inset;
 }
 
 p {
@@ -52,14 +62,9 @@ p {
 	user-select: none;
 }
 
-.container2 {
-	position: relative;
-	margin: auto;
-	height: 56px;
-	width: 259px;
-	border: 5px solid #A0A0A0;
-	box-shadow: 1px 1px inset;
-	background-color: #A0A0A0;
+@font-face{
+	font-family:'digital-clock-font';
+	src: url('ticking-timebomb-bb.regular.ttf');
 }
 
 #numberBombs {
@@ -68,34 +73,29 @@ p {
 	top: 8px;
 	display: inline-block;
 	height: 35px;
-	width: 50px;
+	width: 60px;
 	color: red;
-	border: 1px solid black;
 	background-color: black;
+	color: red;
 	display: flex;
-	justify-content: left;
-	align-items: center;
+	justify-content: center;
 	user-select: none;
-	font-size: 30px;
-	font-weight: bold;
-	font-family: 'Source Sans Pro', sans-serif;
+	font-size: 42px;
+	font-family:'digital-clock-font';
 }
 
 #timer {
 	position: absolute;
-	left: 190px;
+	right: 15px;
 	top: 8px;
 	display: inline-block;
 	height: 35px;
-	width: 50px;
-	border: 1px solid black;
+	width: 60px;
 	background-color: black;
 	color: red;
 	display: flex;
-	justify-content: left;
-	align-items: center;
+	justify-content: center;
 	user-select: none;
-	font-size: 30px;
-	font-weight: bold;
-	font-family: 'Source Sans Pro', sans-serif;
+	font-size: 42px;
+	font-family:'digital-clock-font';
 }

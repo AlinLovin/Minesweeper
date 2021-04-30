@@ -26,6 +26,7 @@ function level(levels) {
 		bombs = 99;
 	}
 
+	currentLevel = levels;
 	lev = levels;
 	start = 0;
 	seconds = 0;
@@ -47,10 +48,14 @@ function removeCells() {
 	}
 	arrayGrid.length = 0;
 	arrayFlags.length = 0;
+	// console.log(arrayFlags);
+	// console.log(arrayGrid);
 }
 
 window.onload = function() {
-	level("medium");
+	currentLevel = "easy";
+	level(currentLevel);
+
 }
 
 // Create table.
@@ -246,7 +251,6 @@ function play(a, b) {
 					}
 					if (arrayGrid[i][j] !== 'BOOM' && arrayFlags[i][j] === "flag") {
 						document.getElementById('' + i + dash + j).innerHTML = "&#10060"; 
-						console.log(i + " " + j);
 					}
 				}
 			}
@@ -276,7 +280,7 @@ function play(a, b) {
 			}
 		}
 		document.getElementById("gameState").style.color = "green";
-		document.getElementById("gameState").innerHTML = "CONGRATULATIONS! YOU WIN!";
+		document.getElementById("gameState").innerHTML = "CONGRATULATIONS! YOU WON!";
 		document.getElementById("table").style.pointerEvents = "none";
 		document.getElementById("button").innerHTML = "&#128526";
 		window.clearInterval(interval);
@@ -284,6 +288,6 @@ function play(a, b) {
 }
 
 // Start another game.
-function restartPage() {
+function newGame() {
 	level(currentLevel);
 }
