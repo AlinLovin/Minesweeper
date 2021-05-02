@@ -46,7 +46,7 @@ button {
 	font-size: 25px;
 }
 
-.container1 {
+.container {
 	position: absolute;
 	justify-content: center;
 	text-align: center;
@@ -57,8 +57,9 @@ button {
 }
 
 p {
-	font-size: 40px;
-	text-align: center;
+	margin: 10px;
+	display: inline-block;
+	font-size: 30px;
 	user-select: none;
 }
 
