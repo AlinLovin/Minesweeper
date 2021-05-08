@@ -1,1 +1,4 @@
-# Minesweeper
+# Minesweeper - Single-player puzzle video game
+
+* The objective of the game is to clear a rectangular board containing hidden "mines" or bombs without detonating any of them, with help from clues about the number of neighboring mines in each field. 
+*The project uses JavaScript, HTML and CSS. The player can select a difficulty level. Mines are scattered throughout a board, which is divided into cells. Cells have three states: uncovered, covered and flagged. 
